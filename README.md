@@ -117,7 +117,7 @@ The `StackManager` class manages Docker stacks, providing functionalities to bui
     - [`containers(): Promise<BasicDockerContainerInfo[]>`](#containers-promisebasicdockercontainerinfo)
     - [`stats(): Promise<BasicDockerContainerUsage[]>`](#stats-promisebasicdockercontainerusage)
     - [`detailedStats(basic: BasicDockerContainerUsage[]): DetailedDockerContainerUsage[]`](#detailedstatsbasic-basicdockercontainerusage-detaileddockercontainerusage)
-    - [`running(stack: Stack | BuiltStack, match: ArrayMatch = 'some'): Promise<boolean>`](#isrunningstack-stack--builtstack-match-arraymatch--some-promiseboolean)
+    - [`running(stack: Stack | BuiltStack, match: ArrayMatch = 'some'): Promise<boolean>`](#runningstack-stack--builtstack-match-arraymatch--some-promiseboolean)
     - [`scale(scaleCommand: ScaleCommand, builtStack: BuiltStack, builtInstance: BuiltInstance, amount: number): Promise<boolean>`](#scalescalecommand-scalecommand-builtstack-builtstack-builtinstance-builtinstance-amount-number-promiseboolean)
 
 ## Imports: StackManager
@@ -226,28 +226,28 @@ This TypeScript file contains utility functions that manipulate and retrieve inf
 
 ## Functions
 
-### `getUniqueNetworks(builtInstances: BuiltInstance[]): Network[]`
+#### `getUniqueNetworks(builtInstances: BuiltInstance[]): Network[]`
 
 - **Description**: Retrieves unique networks from an array of built instances.
 - **Parameters**:
   - `builtInstances`: An array of `BuiltInstance` objects.
 - **Returns**: An array of `Network` objects containing unique networks found in the provided `builtInstances`.
 
-### `getUniqueVolumes(builtInstances: BuiltInstance[]): string[]`
+#### `getUniqueVolumes(builtInstances: BuiltInstance[]): string[]`
 
 - **Description**: Fetches unique volumes from an array of built instances considering certain conditions.
 - **Parameters**:
   - `builtInstances`: An array of `BuiltInstance` objects.
 - **Returns**: An array of strings representing unique volumes adhering to specific criteria from the provided `builtInstances`.
 
-### `getServiceVolumes(instance: Instance): [string, string][]`
+#### `getServiceVolumes(instance: Instance): [string, string][]`
 
 - **Description**: Retrieves service volumes for a given instance based on predefined default mappings.
 - **Parameters**:
   - `instance`: An `Instance` object representing the Docker instance.
 - **Returns**: An array of tuples `[string, string]` denoting service volumes for the provided `instance`.
 
-### `getServicePorts(instance: Instance): [number, number][]`
+#### `getServicePorts(instance: Instance): [number, number][]`
 
 - **Description**: Obtains service ports for a given instance based on predefined default mappings.
 - **Parameters**:
@@ -270,26 +270,26 @@ This TypeScript file contains utility functions for managing Docker commands, ex
 
 ## Functions
 
-### `isWindows(): boolean`
+#### `isWindows(): boolean`
 
 - **Description**: Checks if the current operating system is Windows.
 - **Returns**: `true` if the operating system is Windows, otherwise `false`.
 
-### `printFunction(func: () => Promise<any> | any): void`
+#### `printFunction(func: () => Promise<any> | any): void`
 
 - **Description**: Executes a function and logs its output using the logger.
 - **Parameters**:
   - `func`: A function that returns a promise or a value.
 - **Side Effect**: Logs the output of the provided function using the logger.
 
-### `hasError(str: string): boolean`
+#### `hasError(str: string): boolean`
 
 - **Description**: Checks if a string contains common error keywords.
 - **Parameters**:
   - `str`: The string to be checked.
 - **Returns**: `true` if the string contains common error keywords, otherwise `false`.
 
-### `start(stackManager: StackManager, stack: Stack, onUpdate: (stackManager: StackManager, builtStack: BuiltStack) => Promise<void> = async (_) => {}, location?: string): Promise<void>`
+#### `start(stackManager: StackManager, stack: Stack, onUpdate: (stackManager: StackManager, builtStack: BuiltStack) => Promise<void> = async (_) => {}, location?: string): Promise<void>`
 
 - **Description**: Initiates and starts a Docker stack.
 - **Parameters**:
@@ -299,7 +299,7 @@ This TypeScript file contains utility functions for managing Docker commands, ex
   - `location`: Optional location path for the stack.
 - **Side Effect**: Starts the Docker stack and triggers onUpdate function at specified intervals.
 
-### `docker(cmd: DockerCommand, obj?: any, opts: string = ""): Promise<boolean | string>`
+#### `docker(cmd: DockerCommand, obj?: any, opts: string = ""): Promise<boolean | string>`
 
 - **Description**: Executes Docker commands and returns a boolean or command output.
 - **Parameters**:
@@ -308,7 +308,7 @@ This TypeScript file contains utility functions for managing Docker commands, ex
   - `opts`: Optional string parameter for additional command options.
 - **Returns**: A boolean indicating command success or the output of certain commands.
 
-### `compose(cmd: DockerComposeCommand, obj: any): Promise<boolean>`
+#### `compose(cmd: DockerComposeCommand, obj: any): Promise<boolean>`
 
 - **Description**: Executes Docker Compose commands.
 - **Parameters**:
@@ -316,21 +316,21 @@ This TypeScript file contains utility functions for managing Docker commands, ex
   - `obj`: An object for command execution.
 - **Returns**: A boolean indicating command success.
 
-### `executeCommand(cmd: string): Promise<string>`
+#### `executeCommand(cmd: string): Promise<string>`
 
 - **Description**: Executes a shell command and returns the output.
 - **Parameters**:
   - `cmd`: The command to be executed.
 - **Returns**: A promise resolving to the command output.
 
-### `parseToMemValue(mem: string): MemValue`
+#### `parseToMemValue(mem: string): MemValue`
 
 - **Description**: Parses a string into a memory value with unit.
 - **Parameters**:
   - `mem`: The string to be parsed.
 - **Returns**: An object with parsed memory value and unit.
 
-### `parseToIoValue(io: string): IoValue`
+#### `parseToIoValue(io: string): IoValue`
 
 - **Description**: Parses a string into an I/O value with unit.
 - **Parameters**:
@@ -357,42 +357,42 @@ This TypeScript file contains functions that generate various sections required 
 
 ## Functions
 
-### `createNetworksSection(networks: Network[]): string`
+#### `createNetworksSection(networks: Network[]): string`
 
 - **Description**: Creates a Docker networks section.
 - **Parameters**:
   - `networks`: Array of network objects.
 - **Returns**: A string representing the networks section in the Docker configuration file.
 
-### `createVolumesSection(volumes: [string, string][]): string`
+#### `createVolumesSection(volumes: [string, string][]): string`
 
 - **Description**: Creates a Docker volumes section.
 - **Parameters**:
   - `volumes`: Array of volume pairs.
 - **Returns**: A string representing the volumes section in the Docker configuration file.
 
-### `createPortsSection(ports: [number, number][]): string`
+#### `createPortsSection(ports: [number, number][]): string`
 
 - **Description**: Creates a Docker ports section.
 - **Parameters**:
   - `ports`: Array of port pairs.
 - **Returns**: A string representing the ports section in the Docker configuration file.
 
-### `createDependsOnSection(dependsOn: string[] | BaseInstanceType[]): string`
+#### `createDependsOnSection(dependsOn: string[] | BaseInstanceType[]): string`
 
 - **Description**: Creates a Docker depends_on section.
 - **Parameters**:
   - `dependsOn`: Array of dependencies as strings or BaseInstanceType objects.
 - **Returns**: A string representing the depends_on section in the Docker configuration file.
 
-### `createEnvironmentSection(environment: Record<string, any>): string`
+#### `createEnvironmentSection(environment: Record<string, any>): string`
 
 - **Description**: Creates a Docker environment section.
 - **Parameters**:
   - `environment`: Object representing environment variables.
 - **Returns**: A string representing the environment section in the Docker configuration file.
 
-### `createHealthcheckSection(service: ServiceType, instance?: any): string`
+#### `createHealthcheckSection(service: ServiceType, instance?: any): string`
 
 - **Description**: Creates a Docker healthcheck section based on the service type.
 - **Parameters**:
@@ -400,7 +400,7 @@ This TypeScript file contains functions that generate various sections required 
   - `instance`: Optional instance object for healthcheck generation.
 - **Returns**: A string representing the healthcheck section in the Docker configuration file.
 
-### `createNetworksDefinitions(builtInstances: BuiltInstance[]): string`
+#### `createNetworksDefinitions(builtInstances: BuiltInstance[]): string`
 
 - **Description**: Creates Docker network definitions based on built instances.
 - **Parameters**:
