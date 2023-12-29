@@ -424,36 +424,7 @@ This example script initializes and configures multiple Docker service instances
 ## Code
 
 ```typescript
-import { StackManager } from "./managers/stack";
-import {
-  BuiltStack,
-  ElasticsearchInstanceType,
-  GrafanaInstanceType,
-  KibanaInstanceType,
-  LogstashInstanceType,
-  Network,
-  PrometheusInstanceType,
-  RedmineInstanceType,
-  Stack,
-  WikiJsInstanceType,
-} from "./static/types";
-import {
-  DEFAULT_ADMINER,
-  DEFAULT_GITEA,
-  DEFAULT_JENKINS,
-  DEFAULT_MYSQL,
-  DEFAULT_POSTGRES,
-  DEFAULT_REDIS,
-  DEFAULT_REDMINE,
-  DEFAULT_WIKIJS,
-  DEFAULT_PROMETHEUS,
-  DEFAULT_GRAFANA,
-  DEFAULT_ELASTICSEARCH,
-  DEFAULT_KIBANA,
-  DEFAULT_LOGSTASH,
-} from "./utils/defaults";
-import { start } from "./utils/helpers";
-import { Logger } from "./utils/logger";
+// imports ...
 
 const net: Network = {
   name: "loc",
@@ -525,7 +496,7 @@ async function update(
   try {
     logger.data(stackManager, "stackManager");
     logger.data(builtStack, "builtStack");
-    // Do stuff here (check, log, scale, alert, etc.)
+    // Do stuff here (check, parse, log, scale, alert, etc.)
   } catch (error) {
     logger.error(error);
   }
@@ -540,9 +511,9 @@ async function update(
   const elkStack: Stack = ["elk-stack", [elasticsearch, kibana, logstash]];
   const stackManager = new StackManager();
   const promises = [
-    start(stackManager, devOpsStack, update),
-    start(stackManager, storageStack, update),
-    start(stackManager, elkStack, update),
+    start(stackManager, devOpsStack, update, "./stacks/devops"),
+    start(stackManager, storageStack, update, "./stacks/storage"),
+    start(stackManager, elkStack, update, "./stacks/elk"),
   ];
   await Promise.allSettled(promises);
 })();
