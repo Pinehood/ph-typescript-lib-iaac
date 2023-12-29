@@ -1,0 +1,5 @@
+- log parsers for rest of the services, 10 remaining
+- missing SQL queries as comments for DB user credentials creation, where needed
+- database backing up (pg, ms)
+- load balancing
+- remote instance connection support and execution, not only local
