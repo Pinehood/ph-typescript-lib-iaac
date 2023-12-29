@@ -8,5 +8,3 @@
 /.nyc_output
 /dist
 npm-debug.log
-/src/resources/**/docker-compose.yml
-/src/resources/**/*.yml

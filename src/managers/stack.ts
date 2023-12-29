@@ -59,7 +59,7 @@ export class StackManager implements IManager<Stack, BuiltStack> {
       }
       this.createFiles(builtStack);
       this.logger.info(
-        `Built stack '${stack[0]}' with '${builtInstances.length}' services on location '${builtStack.location}'`
+        `Built stack '${stack[0]}' with '${builtInstances.length}' services on location '${builtStack.location}'`,
       );
       return [true, builtStack];
     } catch (error) {
@@ -185,7 +185,7 @@ export class StackManager implements IManager<Stack, BuiltStack> {
   }
 
   detailedStats(
-    basic: BasicDockerContainerUsage[]
+    basic: BasicDockerContainerUsage[],
   ): DetailedDockerContainerUsage[] {
     const usages: DetailedDockerContainerUsage[] = [];
     try {
@@ -223,9 +223,9 @@ export class StackManager implements IManager<Stack, BuiltStack> {
     return usages;
   }
 
-  async isRunning(
+  async running(
     stack: Stack | BuiltStack,
-    match: ArrayMatch = "some"
+    match: ArrayMatch = "some",
   ): Promise<boolean> {
     try {
       let instances: Instance[];
@@ -235,7 +235,7 @@ export class StackManager implements IManager<Stack, BuiltStack> {
         instances = stack[1] as Instance[];
       }
       const names = (await this.containers()).map(
-        (container) => container.names
+        (container) => container.names,
       );
       const predicate = (i: Instance): boolean => names.includes(i.name);
       if (match === "some") {
@@ -253,14 +253,14 @@ export class StackManager implements IManager<Stack, BuiltStack> {
     scaleCommand: ScaleCommand,
     builtStack: BuiltStack,
     builtInstance: BuiltInstance,
-    amount: number
+    amount: number,
   ): Promise<boolean> {
     try {
       const stack = builtStack.stack;
       const oldInstance = builtInstance.instance;
       if (!oldInstance.options?.scalable) {
         this.logger.warn(
-          `Service '${oldInstance.service}' with name '${oldInstance.name}' in stack '${stack[0]}' is not scalable`
+          `Service '${oldInstance.service}' with name '${oldInstance.name}' in stack '${stack[0]}' is not scalable`,
         );
         return false;
       }
@@ -268,7 +268,7 @@ export class StackManager implements IManager<Stack, BuiltStack> {
       if (scaleCommand === "up") {
         if (this.instanceManager.scaled(builtInstance)) {
           this.logger.warn(
-            `Service '${oldInstance.service}' with name '${oldInstance.name}' in stack '${stack[0]}' is already scaled. Scale it down first to be able to scale it back up differently`
+            `Service '${oldInstance.service}' with name '${oldInstance.name}' in stack '${stack[0]}' is already scaled. Scale it down first to be able to scale it back up differently`,
           );
           return false;
         }
@@ -283,19 +283,19 @@ export class StackManager implements IManager<Stack, BuiltStack> {
       } else if (scaleCommand === "down") {
         if (!this.instanceManager.scaled(builtInstance)) {
           this.logger.warn(
-            `Service '${oldInstance.service}' with name '${oldInstance.name}' in stack '${stack[0]}' is not scaled, not able to scale down`
+            `Service '${oldInstance.service}' with name '${oldInstance.name}' in stack '${stack[0]}' is not scaled, not able to scale down`,
           );
           return false;
         }
         instances = stack[1];
         for (let i = 0; i < amount; i++) {
           const firstInstance = instances.find((fi) =>
-            fi.service.startsWith(oldInstance.service + NAME_SPLITTER)
+            fi.service.startsWith(oldInstance.service + NAME_SPLITTER),
           );
           if (firstInstance) {
             instances = instances.filter((i) => i.name !== firstInstance.name);
             this.instanceManager.remove(
-              this.instanceManager.details(firstInstance)
+              this.instanceManager.details(firstInstance),
             );
           }
         }
@@ -309,7 +309,7 @@ export class StackManager implements IManager<Stack, BuiltStack> {
             oldInstance.service
           }' with name '${oldInstance.name}' in stack '${stack[0]}' ${
             scaleCommand === "up" ? "to" : "from"
-          } '${amount}' instances`
+          } '${amount}' instances`,
         );
         return await this.start(built);
       }
@@ -336,7 +336,7 @@ export class StackManager implements IManager<Stack, BuiltStack> {
         });
       });
       this.logger.info(
-        `Creating '${commands.length}' external networks for stack '${stack[0]}'`
+        `Creating '${commands.length}' external networks for stack '${stack[0]}'`,
       );
       commands.forEach(async (command) => await executeCommand(command));
       return true;
@@ -357,10 +357,10 @@ export class StackManager implements IManager<Stack, BuiltStack> {
         {
           encoding: "utf8",
           flag: "w",
-        }
+        },
       );
       this.logger.info(
-        `Created file '${builtStack.location}/${YML_FILE_NAME}'`
+        `Created file '${builtStack.location}/${YML_FILE_NAME}'`,
       );
       builtStack.instances
         .filter((bi) => !!bi.configs)

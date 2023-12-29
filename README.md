@@ -109,7 +109,7 @@ The `StackManager` class manages Docker stacks, providing functionalities to bui
   - [Properties: StackManager](#properties-stackmanager)
   - [Constructor: StackManager](#constructor-stackmanager)
   - [Methods: StackManager](#methods-stackmanager)
-    - [`build(stack: Stack, location?: string): Promise<[boolean, BuiltStack]>`](#buildstack-stack-location-string-promisefalse-null)
+    - [`build(stack: Stack, location?: string): Promise<[boolean, BuiltStack]>`](#buildstack-stack-location-string-promiseboolean-builtstack)
     - [`start(builtStack: BuiltStack): Promise<boolean>`](#startbuiltstack-builtstack-promiseboolean)
     - [`stop(builtStack: BuiltStack): Promise<boolean>`](#stopbuiltstack-builtstack-promiseboolean)
     - [`details(stack: Stack): BuiltStack | null`](#detailsstack-stack-builtstack--null)
@@ -117,7 +117,7 @@ The `StackManager` class manages Docker stacks, providing functionalities to bui
     - [`containers(): Promise<BasicDockerContainerInfo[]>`](#containers-promisebasicdockercontainerinfo)
     - [`stats(): Promise<BasicDockerContainerUsage[]>`](#stats-promisebasicdockercontainerusage)
     - [`detailedStats(basic: BasicDockerContainerUsage[]): DetailedDockerContainerUsage[]`](#detailedstatsbasic-basicdockercontainerusage-detaileddockercontainerusage)
-    - [`isRunning(stack: Stack | BuiltStack, match: ArrayMatch = 'some'): Promise<boolean>`](#isrunningstack-stack--builtstack-match-arraymatch--some-promiseboolean)
+    - [`running(stack: Stack | BuiltStack, match: ArrayMatch = 'some'): Promise<boolean>`](#isrunningstack-stack--builtstack-match-arraymatch--some-promiseboolean)
     - [`scale(scaleCommand: ScaleCommand, builtStack: BuiltStack, builtInstance: BuiltInstance, amount: number): Promise<boolean>`](#scalescalecommand-scalecommand-builtstack-builtstack-builtinstance-builtinstance-amount-number-promiseboolean)
 
 ## Imports: StackManager
@@ -172,7 +172,7 @@ Retrieves basic statistics of Docker container usage.
 
 Converts basic container usage statistics into detailed format.
 
-#### `isRunning(stack: Stack | BuiltStack, match: ArrayMatch = 'some'): Promise<boolean>`
+#### `running(stack: Stack | BuiltStack, match: ArrayMatch = 'some'): Promise<boolean>`
 
 Checks if instances in a stack are currently running.
 

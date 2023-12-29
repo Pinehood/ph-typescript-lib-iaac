@@ -2,13 +2,12 @@ import { createNetworksDefinitions } from "../utils/creators";
 import { getUniqueVolumes } from "../utils/getters";
 import { isWindows } from "../utils/helpers";
 import { BuiltInstance, BuiltStack, Stack } from "../static/types";
-import { default as resources } from "../resources";
 
 export default (stack: Stack, builtInstances: BuiltInstance[]): BuiltStack => {
   const volumes = `${getUniqueVolumes(builtInstances)
     .map(
       (v) => `
-  ${v}: {}`
+  ${v}: {}`,
     )
     .join("")}`;
 
@@ -24,13 +23,13 @@ volumes:@volumes@
       "@services@",
       builtInstances
         .map((bi) => bi.snippet.replace(/\n    @empty@/g, ""))
-        .join("\n")
+        .join("\n"),
     )
     .replace("@networks@", createNetworksDefinitions(builtInstances))
     .replace("@volumes@", isWindows() ? volumes : "");
 
   return {
-    location: `${resources()}/${stack[0]}`,
+    location: `${process.cwd()}/${stack[0]}`,
     instances: builtInstances,
     snippet,
     stack,
