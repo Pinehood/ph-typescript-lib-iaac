@@ -10,6 +10,7 @@ Mainly documentation of code and logic.
 - [Utility Functions](#utility-functions)
 - [Docker Utilities](#docker-utilities)
 - [Docker Creators](#docker-creators)
+- [Example Script](#example-script)
 
 # InstanceManager Class
 
@@ -415,3 +416,163 @@ This TypeScript file contains functions that generate various sections required 
 ### Imported Constants
 
 - `EMPTY` from "../static/constants"
+
+# Example Script
+
+This example script initializes and configures multiple Docker service instances and manages their connectivity in a Docker environment. It orchestrates service creation, network setup, and stack management using predefined configurations and helper functions.
+
+## Code
+
+```typescript
+import { StackManager } from "./managers/stack";
+import {
+  BuiltStack,
+  ElasticsearchInstanceType,
+  GrafanaInstanceType,
+  KibanaInstanceType,
+  LogstashInstanceType,
+  Network,
+  PrometheusInstanceType,
+  RedmineInstanceType,
+  Stack,
+  WikiJsInstanceType,
+} from "./static/types";
+import {
+  DEFAULT_ADMINER,
+  DEFAULT_GITEA,
+  DEFAULT_JENKINS,
+  DEFAULT_MYSQL,
+  DEFAULT_POSTGRES,
+  DEFAULT_REDIS,
+  DEFAULT_REDMINE,
+  DEFAULT_WIKIJS,
+  DEFAULT_PROMETHEUS,
+  DEFAULT_GRAFANA,
+  DEFAULT_ELASTICSEARCH,
+  DEFAULT_KIBANA,
+  DEFAULT_LOGSTASH,
+} from "./utils/defaults";
+import { start } from "./utils/helpers";
+import { Logger } from "./utils/logger";
+
+const net: Network = {
+  name: "loc",
+  driver: "bridge",
+  external: false,
+};
+
+const ext: Network = {
+  name: "ext",
+  external: true,
+};
+
+const postgres = DEFAULT_POSTGRES();
+postgres.networks = [net, ext];
+
+const mysql = DEFAULT_MYSQL();
+mysql.networks = [net, ext];
+
+const adminer = DEFAULT_ADMINER();
+adminer.networks = [net, ext];
+
+const redis = DEFAULT_REDIS();
+redis.networks = [net];
+
+const gitea = DEFAULT_GITEA();
+gitea.networks = [net];
+
+const jenkins = DEFAULT_JENKINS();
+jenkins.networks = [net];
+
+const redmine = DEFAULT_REDMINE();
+redmine.networks = [net, ext];
+(redmine as RedmineInstanceType).mysql.host = mysql.name;
+
+const wikijs = DEFAULT_WIKIJS();
+wikijs.networks = [net, ext];
+(wikijs as WikiJsInstanceType).mysql.host = mysql.name;
+
+const prometheus = DEFAULT_PROMETHEUS();
+prometheus.networks = [net];
+
+const grafana = DEFAULT_GRAFANA();
+grafana.networks = [net];
+grafana.dependsOn = [prometheus];
+(grafana as GrafanaInstanceType).prometheus =
+  prometheus as PrometheusInstanceType;
+
+const elasticsearch = DEFAULT_ELASTICSEARCH();
+elasticsearch.networks = [net];
+
+const kibana = DEFAULT_KIBANA();
+kibana.networks = [net];
+kibana.dependsOn = [elasticsearch];
+(kibana as KibanaInstanceType).elasticsearch =
+  elasticsearch as ElasticsearchInstanceType;
+
+const logstash = DEFAULT_LOGSTASH();
+logstash.networks = [net];
+logstash.dependsOn = [elasticsearch];
+(logstash as LogstashInstanceType).elasticsearch =
+  elasticsearch as ElasticsearchInstanceType;
+
+const logger = new Logger("Main");
+
+async function update(
+  stackManager: StackManager,
+  builtStack: BuiltStack,
+): Promise<void> {
+  try {
+    logger.data(stackManager, "stackManager");
+    logger.data(builtStack, "builtStack");
+    // Do stuff here (check, log, scale, alert, etc.)
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
+(async function entrypoint() {
+  const devOpsStack: Stack = [
+    "devops-stack",
+    [adminer, jenkins, prometheus, grafana, gitea, redmine, wikijs],
+  ];
+  const storageStack: Stack = ["storage-stack", [postgres, redis, mysql]];
+  const elkStack: Stack = ["elk-stack", [elasticsearch, kibana, logstash]];
+  const stackManager = new StackManager();
+  const promises = [
+    start(stackManager, devOpsStack, update),
+    start(stackManager, storageStack, update),
+    start(stackManager, elkStack, update),
+  ];
+  await Promise.allSettled(promises);
+})();
+```
+
+## Imports
+
+- `StackManager` from `./managers/stack`
+- Various types like `BuiltStack`, `InstanceType`, `Network`, `Stack`, etc., from `./static/types`
+- Default configurations for Docker services like `DEFAULT_ADMINER`, `DEFAULT_GITEA`, `DEFAULT_JENKINS`, etc., from `./utils/defaults`
+- `start` function from `./utils/helpers`
+- `Logger` from `./utils/logger`
+
+## Configuration Initialization
+
+- Defines two network configurations (`net` and `ext`) with different properties such as `name` and `external` to set up internal and external networks within Docker.
+- Configures default settings for various Docker services using functions like `DEFAULT_POSTGRES()`, `DEFAULT_MYSQL()`, etc., and assigns networks to these service instances.
+- Establishes connections between certain services by setting up dependencies (`dependsOn`) between them, for instance, Grafana depending on Prometheus, Kibana depending on Elasticsearch, Logstash depending on Elasticsearch.
+- Initializes a `Logger` instance for logging purposes.
+
+## Asynchronous Update Function
+
+- Defines an asynchronous `update` function that takes in a `StackManager` and a `BuiltStack` as parameters.
+- Attempts to log data related to the `stackManager` and `builtStack`. In case of an error, logs the error using the `Logger`.
+
+## Entry Point
+
+- Defines an asynchronous `entrypoint` function.
+- Creates three stacks (`devOpsStack`, `storageStack`, `elkStack`) that group different sets of service instances.
+- Instantiates a `StackManager`.
+- Initiates the stacks asynchronously using the `start` function, triggering the `update` function for each stack, and awaits their settlement using `Promise.allSettled`.
+
+This script acts as a configuration and management tool for Docker service instances, networks, and stacks, orchestrating the setup and interaction among different services within a Docker environment.
