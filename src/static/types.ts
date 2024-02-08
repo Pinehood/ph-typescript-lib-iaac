@@ -40,6 +40,17 @@ export type DefaultMappings = {
   ports: number[];
 };
 
+export type Override = {
+  instanceName: string;
+  fromKey: string;
+  toKey: string;
+};
+
+export type Reference = {
+  instanceName: string;
+  value: string;
+};
+
 export type Network = {
   name: string;
   external: boolean;

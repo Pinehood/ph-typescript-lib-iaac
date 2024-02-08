@@ -517,6 +517,45 @@ async function update(
   ];
   await Promise.allSettled(promises);
 })();
+
+// You could also use available Builder pattern implementation for stack building in another way
+
+const esObjRef = {
+  instanceName: "default-elasticsearch",
+  value: "elasticsearch",
+};
+
+const msObjRef = {
+  instanceName: "default-mysql",
+  fromKey: "name",
+  toKey: "mysql.host",
+};
+
+const storageStack = new StackBuilder("storage-stack")
+  .useInstance(DEFAULT_REDIS())
+  .withNetworks([net])
+  .and()
+  .useInstance(DEFAULT_MYSQL())
+  .withNetworks([net, ext])
+  .and()
+  .useInstance(DEFAULT_POSTGRES())
+  .withNetworks([net, ext])
+  .build();
+
+const elkStackBuild = new StackBuilder("elk-stack")
+  .useInstance(DEFAULT_ELASTICSEARCH())
+  .withNetworks([net])
+  .and()
+  .useInstance(DEFAULT_KIBANA())
+  .withNetworks([net])
+  .withDependsOn(["default-elasticsearch"])
+  .withObjectReferences([esObjRef])
+  .and()
+  .useInstance(DEFAULT_LOGSTASH())
+  .withNetworks([net])
+  .withDependsOn(["default-elasticsearch"])
+  .withObjectReferences([esObjRef])
+  .build();
 ```
 
 ## Imports
