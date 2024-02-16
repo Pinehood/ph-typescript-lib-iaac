@@ -1,6 +1,6 @@
 {
   "name": "ph-typescript-iaac",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "scripts": {
     "lint": "eslint \"./src/**/*.ts\"",
     "build": "npx tsc"
