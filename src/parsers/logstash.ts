@@ -1,16 +1,21 @@
+import { BaseLogParser } from "./base";
 import { LogstashLogObject } from "../static/types";
-import { ILogParser } from "../static/interfaces";
 
-export class LogstashLogParser implements ILogParser<LogstashLogObject> {
-  parse(logLines: string[]): LogstashLogObject[] {
-    const parsedLogs: LogstashLogObject[] = [];
-    logLines.forEach((logLine) => parsedLogs.push(this.parseLogLine(logLine)));
-    return parsedLogs.filter((logLine) => logLine !== null);
-  }
-
+export class LogstashLogParser extends BaseLogParser<LogstashLogObject> {
   parseLogLine(logLine: string): LogstashLogObject | null {
     try {
-      console.log(logLine);
+      const regex =
+        /\[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2},\d+)\]\[(\w+)\]\[([^\]]+)\] (.*)/;
+      const matches = logLine.match(regex);
+      if (matches && matches.length === 5) {
+        const [, time, level, logger, message] = matches;
+        return {
+          time,
+          level,
+          logger,
+          message: message.trim(),
+        };
+      }
     } catch {}
     return null;
   }

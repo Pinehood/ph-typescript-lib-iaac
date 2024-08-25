@@ -1,11 +1,14 @@
 # Pinehood TypeScript Infrastructure-as-a-Code
 
+Simple proof-of-concept library that demonstrates possibilities of utilising simple command execution wrapping and Docker service templating to achieve an easily configurable Infrastructure-as-a-Code implementation, without fancy payment subscriptions, or overkilled Cloud services/providers usage requirements.
+
 ## Main Table of Contents
 
 Mainly documentation of code and logic.
 
 - [InstanceManager Class](#instancemanager-class)
 - [StackManager Class](#stackmanager-class)
+- [DatabaseManager Class](#databasemanager-class)
 - [General Configuration](#general-configuration)
 - [Utility Functions](#utility-functions)
 - [Docker Utilities](#docker-utilities)
@@ -184,6 +187,35 @@ Scales instances within a Docker stack.
 
 - `createExternalNetworks(stack: Stack): Promise<boolean>` - Creates external Docker networks used by the stack.
 - `createFiles(builtStack: BuiltStack): boolean` - Creates necessary files associated with the built stack.
+
+# DatabaseManager Class
+
+The `DatabaseManager` class is responsible for performing backup and restore of the data for various SQL based systems. For now, only PostgreSQL is supported.
+
+## Table of Contents
+
+- [Imports: DatabaseManager](#imports-databasemanager)
+- [Class: DatabaseManager](#class-databasemanager)
+  - [Methods: DatabaseManager](#methods-databasemanager)
+    - [backup(object: T, path: string)](#backupobject-t-path-string)
+    - [restore(object: T, path: string)](#restoreobject-t-path-string)
+
+## Imports: DatabaseManager
+
+- `Logger`, `executeCommand` from "../utils/helpers"
+- Various types, interfaces, constants, parsers, and templates from respective paths
+
+## Class: DatabaseManager
+
+### Methods: DatabaseManager
+
+#### `backup(object: T, path: string): Promise<boolean>`
+
+Creates a .gz archive file from the dumped database data at the given path for the given object (instance).
+
+#### `restore(object: T, path: string): Promise<boolean>`
+
+Restores a .gz archive file backup (using `gunzip`) for a database at the given path for the given object (instance).
 
 # General Configuration
 
@@ -496,7 +528,7 @@ async function update(
   try {
     logger.data(stackManager, "stackManager");
     logger.data(builtStack, "builtStack");
-    // Do stuff here (check, parse, log, scale, alert, etc.)
+    // Do stuff here (check, parse, log, scale, alert, backup etc.)
   } catch (error) {
     logger.error(error);
   }

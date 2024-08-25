@@ -1,21 +1,33 @@
+import { BaseLogParser } from "./base";
 import { PostgresLogObject } from "../static/types";
-import { ILogParser } from "../static/interfaces";
 
-export class PostgresLogParser implements ILogParser<PostgresLogObject> {
-  parse(logLines: string[]): PostgresLogObject[] {
-    const parsedLogs: PostgresLogObject[] = [];
-    logLines.forEach((logLine) => parsedLogs.push(this.parseLogLine(logLine)));
-    return parsedLogs.filter((logLine) => logLine !== null);
-  }
-
+export class PostgresLogParser extends BaseLogParser<PostgresLogObject> {
   parseLogLine(logLine: string): PostgresLogObject | null {
     try {
       const regex =
-        /^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d+\sUTC)\s\[(\d+)\]\s(\w+):\s(.*)$/;
+        /^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+) (\w+) \[(\d+)\] (\w+): (.*)/;
       const matches = logLine.match(regex);
-      if (matches && matches.length === 5) {
-        const [, time, , level, message] = matches;
-        return { time, level, message: message.trimStart() };
+      if (matches && matches.length >= 6) {
+        const [, time, level, pid, , message] = matches;
+        const kvRegex = /(\w+)=([^\s]+)/g;
+        const kvMatches = [...message.matchAll(kvRegex)];
+        let user: string;
+        let database: string;
+        let applicationName: string;
+        kvMatches.forEach((match) => {
+          if (match[1] === "user") user = match[2];
+          else if (match[1] === "database") database = match[2];
+          else if (match[1] === "application_name") applicationName = match[2];
+        });
+        return {
+          time,
+          level,
+          pid: parseInt(pid),
+          message: message.trim(),
+          user,
+          database,
+          application: applicationName,
+        };
       }
     } catch {}
     return null;

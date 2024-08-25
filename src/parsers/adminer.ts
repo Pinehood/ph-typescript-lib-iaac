@@ -1,20 +1,24 @@
+import { BaseLogParser } from "./base";
 import { AdminerLogObject } from "../static/types";
-import { ILogParser } from "../static/interfaces";
 
-export class AdminerLogParser implements ILogParser<AdminerLogObject> {
-  parse(logLines: string[]): AdminerLogObject[] {
-    const parsedLogs: AdminerLogObject[] = [];
-    logLines.forEach((logLine) => parsedLogs.push(this.parseLogLine(logLine)));
-    return parsedLogs.filter((logLine) => logLine !== null);
-  }
-
+export class AdminerLogParser extends BaseLogParser<AdminerLogObject> {
   parseLogLine(logLine: string): AdminerLogObject | null {
     try {
-      const regex = /\[(.*?)\]\s\[(.*?)\]:(\d+) (.*)/;
+      const regex =
+        /\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\s*(\[(\w+)\])?\s*from\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::(\d+))?\s*(database=([^\s]+))?\s*(query=(.*))?/;
       const matches = logLine.match(regex);
-      if (matches && matches.length === 5) {
-        const [, time, address, port, message] = matches;
-        return { time, caller: { address, port: parseInt(port) }, message };
+      if (matches) {
+        const [, time, , level, address, port, , database, , query] = matches;
+        const type = query ? query.split(" ")[0].toUpperCase() : undefined;
+        return {
+          time,
+          address,
+          port: parseInt(port),
+          level,
+          message: query || "No message",
+          database,
+          type,
+        };
       }
     } catch {}
     return null;

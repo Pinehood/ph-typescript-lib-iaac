@@ -1,16 +1,25 @@
+import { BaseLogParser } from "./base";
 import { PrometheusLogObject } from "../static/types";
-import { ILogParser } from "../static/interfaces";
 
-export class PrometheusLogParser implements ILogParser<PrometheusLogObject> {
-  parse(logLines: string[]): PrometheusLogObject[] {
-    const parsedLogs: PrometheusLogObject[] = [];
-    logLines.forEach((logLine) => parsedLogs.push(this.parseLogLine(logLine)));
-    return parsedLogs.filter((logLine) => logLine !== null);
-  }
-
+export class PrometheusLogParser extends BaseLogParser<PrometheusLogObject> {
   parseLogLine(logLine: string): PrometheusLogObject | null {
     try {
-      console.log(logLine);
+      const regex =
+        /level=(\w+)\s+ts=([\d-T:.Z]+)\s+caller=([^\s]+)\s+msg="([^"]+)"(?:\s+component="([^"]+)")?(?:\s+err="([^"]+)")?(?:\s+version="([^"]+)")?/;
+      const matches = logLine.match(regex);
+      if (matches && matches.length >= 5) {
+        const [, level, time, caller, message, component, error, version] =
+          matches;
+        return {
+          time,
+          level,
+          caller,
+          message,
+          component,
+          error,
+          version,
+        };
+      }
     } catch {}
     return null;
   }

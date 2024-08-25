@@ -10,6 +10,12 @@ export interface IManager<T, R> {
   details(object: T): Promise<R> | R | null;
 }
 
+export interface IDatabaseManager<T> {
+  backup(object: T, path: string): Promise<boolean>;
+
+  restore(object: T, path: string): Promise<boolean>;
+}
+
 export interface ILogParser<T> {
   parse(logLines: string[]): T[];
 

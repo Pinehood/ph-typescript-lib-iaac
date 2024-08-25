@@ -42,7 +42,9 @@ export class StackManager implements IManager<Stack, BuiltStack> {
 
   async build(stack: Stack, location?: string): Promise<[boolean, BuiltStack]> {
     try {
-      if (!(await this.createExternalNetworks(stack))) return [false, null];
+      if (!(await this.createExternalNetworks(stack))) {
+        return [false, null];
+      }
       const instances = stack[1];
       const builtInstances: BuiltInstance[] = [];
       instances.forEach((instance) => {
@@ -50,7 +52,9 @@ export class StackManager implements IManager<Stack, BuiltStack> {
         if (success) builtInstances.push(built);
       });
       const builtStack = STACK_TEMPLATE(stack, builtInstances);
-      if (location) builtStack.location = location;
+      if (location) {
+        builtStack.location = location;
+      }
       const stackIdx = this.objects.findIndex((bs) => bs.stack[0] === stack[0]);
       if (stackIdx < 0) {
         this.objects.push(builtStack);

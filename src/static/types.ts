@@ -9,6 +9,11 @@ export type MemUnit = "KiB" | "MiB" | "GiB";
 export type IoUnit = "kB" | "B" | "MB" | "GB";
 export type DockerComposeCommand = "up" | "down";
 
+export type ServiceConfig = {
+  logParser: new () => any;
+  template: (instance: any) => any;
+};
+
 export type DockerCommand =
   | "start"
   | "stop"
@@ -208,45 +213,97 @@ export type BuiltStack = {
 };
 
 export type BaseLogObject = {
-  time: string;
-  message: string;
+  time?: string;
+  message?: string;
+  level?: string;
 };
 
 export type AdminerLogObject = BaseLogObject & {
-  caller: {
-    address: string;
-    port: number;
-  };
+  address: string;
+  port?: number;
+  database?: string;
+  type?: string;
 };
 
 export type ElasticsearchLogObject = BaseLogObject & {
-  field: string;
+  component: string;
+  node: string;
+  index: string;
 };
 
-export type GiteaLogObject = BaseLogObject & { field: string };
+export type GiteaLogObject = BaseLogObject & {
+  module: string;
+  file: string;
+  func: string;
+};
 
-export type GrafanaLogObject = BaseLogObject & { field: string };
+export type GrafanaLogObject = BaseLogObject & {
+  logger: string;
+  user?: number;
+  org?: number;
+  uname?: string;
+  method?: string;
+  path?: string;
+  status?: number;
+};
 
-export type JenkinsLogObject = BaseLogObject & { field: string };
+export type JenkinsLogObject = BaseLogObject & {
+  logger: string;
+  job?: string;
+  build?: string;
+};
 
-export type KibanaLogObject = BaseLogObject & { field: string };
+export type KibanaLogObject = BaseLogObject & {
+  pid: number;
+  type?: string;
+  tags?: string[];
+};
 
-export type LogstashLogObject = BaseLogObject & { field: string };
+export type LogstashLogObject = BaseLogObject & {
+  logger: string;
+};
 
-export type MySqlLogObject = BaseLogObject & { field: string };
+export type MySqlLogObject = BaseLogObject & {
+  code?: string;
+  component?: string;
+  connection?: number;
+  user?: string;
+  host?: string;
+  db?: string;
+};
 
-export type PrometheusLogObject = BaseLogObject & { field: string };
+export type PrometheusLogObject = BaseLogObject & {
+  caller: string;
+  component?: string;
+  error?: string;
+  version?: string;
+};
 
-export type RedmineLogObject = BaseLogObject & { field: string };
+export type RedmineLogObject = BaseLogObject & {
+  pid: number;
+  method?: string;
+  request?: string;
+  status?: string;
+  response?: string;
+  error?: string;
+};
 
-export type WikiJsLogObject = BaseLogObject & { field: string };
+export type WikiJsLogObject = BaseLogObject & {
+  time: string;
+  source: string;
+};
 
 export type PostgresLogObject = BaseLogObject & {
-  level: string;
+  pid: number;
+  user?: string;
+  database?: string;
+  application?: string;
+  details?: string;
 };
 
 export type RedisLogObject = BaseLogObject & {
   type: string;
+  pid: number;
 };
 
 export type BasicDockerContainerUsage = {
